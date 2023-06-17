@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{NUM_COLS, NUM_ROWS, frame::{Drawable, Frame}, shot::Shot};
+use crate::{NUM_COLS, NUM_ROWS, frame::{Drawable, Frame}, shot::Shot, invaders::Invaders};
 
 const MAX_SHOTS: usize = 10;
 
@@ -41,6 +41,18 @@ impl Player {
             shot.update(delta);
         }
         self.shots.retain_mut(|shot| !shot.ended());
+    }
+    pub fn detect_hits(&mut self, invaders: &mut Invaders) -> bool {
+        let mut hit_something = false;
+        
+        for shot in self.shots.iter_mut() {
+            if !shot.exploded && invaders.kill_invader_at(shot.x, shot.y) {
+                hit_something = true;
+                shot.explode();
+            }
+        }
+
+        hit_something
     }
 }
 
