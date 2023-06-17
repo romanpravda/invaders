@@ -91,7 +91,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         thread::sleep(Duration::from_millis(1));
 
         // Win or lose
-        if (invaders.all_killed()) {
+        if invaders.all_killed() {
             audio.play("win");
             break 'gameloop;
         } else if invaders.reached_bottom() {
