@@ -1,3 +1,14 @@
+use std::thread;
+use std::{error::Error, io};
+use crossbeam::channel::{self, Sender, Receiver};
+use crossterm::cursor::{Hide, Show};
+use crossterm::event::{Event, KeyCode};
+use crossterm::{terminal, ExecutableCommand, event};
+use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
+use invaders::frame::{Frame, Drawable};
+use invaders::{frame, render};
+use rusty_audio::Audio;
+
 fn main() -> Result<(), Box<dyn Error>> {
     let mut audio = Audio::new();
     audio.add("explode", "audio/explode.wav");
