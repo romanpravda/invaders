@@ -1,4 +1,5 @@
 use std::thread;
+use std::time::{Duration, Instant};
 use std::{error::Error, io};
 use crossbeam::channel::{self, Sender, Receiver};
 use crossterm::cursor::{Hide, Show};
@@ -42,8 +43,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     
     // Game loop
     let mut player = Player::new();
+    let mut instant = Instant::now();
     'gameloop: loop {
         // Per-frame init
+        let delta = instant.elapsed();
+        instant = Instant::now();
         let mut cur_frame = frame::new_frame();
         
         // Input
@@ -56,16 +60,25 @@ fn main() -> Result<(), Box<dyn Error>> {
                     },
                     KeyCode::Left => player.move_left(),
                     KeyCode::Right => player.move_right(),
+                    KeyCode::Char(' ') | KeyCode::Enter => {
+                        if player.shoot() {
+                            audio.play("pew");
+                        }
+                    },
                     _ => {}
                 }
             }
         }
+        
+        // Updates
+        player.update(delta);
         
         // Draw & render
         player.draw(&mut cur_frame);
         let _ = render_tx.send(cur_frame); // Ignore the error
         thread::sleep(Duration::from_millis(1));
     }
+    
     
     // Exiting
     drop(render_tx);
