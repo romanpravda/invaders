@@ -6,6 +6,7 @@ use crossterm::event::{Event, KeyCode};
 use crossterm::{terminal, ExecutableCommand, event};
 use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
 use invaders::frame::{Frame, Drawable};
+use invaders::player::Player;
 use invaders::{frame, render};
 use rusty_audio::Audio;
 
@@ -40,7 +41,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     });
     
     // Game loop
+    let mut player = Player::new();
     'gameloop: loop {
+        // Per-frame init
+        let mut cur_frame = frame::new_frame();
+        
         // Input
         while event::poll(Duration::default())? {
             if let Event::Key(key_event) = event::read()? {
@@ -49,12 +54,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                         audio.play("lose");
                         break 'gameloop;
                     },
+                    KeyCode::Left => player.move_left(),
+                    KeyCode::Right => player.move_right(),
                     _ => {}
                 }
             }
         }
         
         // Draw & render
+        player.draw(&mut cur_frame);
         let _ = render_tx.send(cur_frame); // Ignore the error
         thread::sleep(Duration::from_millis(1));
     }
