@@ -31,7 +31,7 @@ impl Shot {
         self.exploded = true;
         self.timer = Timer::from_millis(250);
     }
-    pub fn ended(&mut self) -> bool {
+    pub fn ended(&self) -> bool {
         (self.exploded && self.timer.ready) || self.y == 0
     }
 }

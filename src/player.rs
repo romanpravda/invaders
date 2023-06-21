@@ -40,7 +40,7 @@ impl Player {
         for shot in self.shots.iter_mut() {
             shot.update(delta);
         }
-        self.shots.retain_mut(|shot| !shot.ended());
+        self.shots.retain(|shot| !shot.ended());
     }
     pub fn detect_hits(&mut self, invaders: &mut Invaders) -> bool {
         let mut hit_something = false;
